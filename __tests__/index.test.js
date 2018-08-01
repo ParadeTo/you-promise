@@ -6,11 +6,26 @@ describe('you-promise tests', () => {
     new YouPromise((resolve) => {
       setTimeout(() => {
         resolve()
-        expect(times).toBe(2)
-        cb()
       }, 10)
     })
       .then(() => times++)
       .then(() => times++)
+      .then(() => {
+        expect(times).toBe(2)
+        cb()
+      })
+  })
+
+  it('support promise synchronous', cb => {
+    let times = 0
+    new YouPromise((resolve) => {
+      resolve()
+    })
+      .then(() => times++)
+      .then(() => times++)
+      .then(() => {
+        expect(times).toBe(2)
+        cb()
+      })
   })
 })

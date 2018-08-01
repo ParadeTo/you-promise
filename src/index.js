@@ -7,9 +7,11 @@ function YouPromise (fn) {
   }
 
   function resolve (value) {
-    deferreds.forEach(function (deferred) {
-      deferred(value)
-    })
+    setTimeout(() => {
+      deferreds.forEach(function (deferred) {
+        deferred(value)
+      })
+    }, 0)
   }
 
   fn(resolve)
