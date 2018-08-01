@@ -1,6 +1,6 @@
 const YouPromise = require('../src')
 
-describe('you-promise tests', () => {
+describe('YouPromise tests', () => {
   it('support chain', cb => {
     let times = 0
     new YouPromise((resolve) => {
@@ -27,5 +27,24 @@ describe('you-promise tests', () => {
         expect(times).toBe(2)
         cb()
       })
+  })
+
+  it('support call then after promise resolve', cb => {
+    let times = 0
+    const p = new YouPromise((resolve, reject) => {
+      resolve()
+    })
+
+    p.then(() => {
+      times++
+    })
+
+    setTimeout(() => {
+      p.then(() => {
+        times++
+        expect(times).toBe(2)
+        cb()
+      })
+    }, 100)
   })
 })
