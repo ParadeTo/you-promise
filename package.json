@@ -1,0 +1,22 @@
+{
+  "name": "you-promise",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "standard": {
+    "globals": [
+      "it",
+      "describe",
+      "test",
+      "expect",
+      "beforeEach",
+      "jest",
+      "Response"
+    ]
+  }
+}
