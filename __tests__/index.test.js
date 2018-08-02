@@ -47,4 +47,54 @@ describe('YouPromise tests', () => {
       })
     }, 100)
   })
+
+  it('chained then should pass value rightly', cb => {
+    const p1 = new YouPromise((resolve) => {
+      setTimeout(() => {
+        resolve(1)
+      }, 10)
+    })
+
+    p1
+      .then(val => {
+        expect(val).toBe(1)
+        return 2
+      })
+      .then(val => {
+        expect(val).toBe(2)
+        cb()
+      })
+  })
+
+  // it('chained promise', cb => {
+  //   let user = {}
+  //   function getUserId () {
+  //     return new YouPromise((resolve, reject) => {
+  //       setTimeout(() => {
+  //         user.id = 9876
+  //         resolve(9876)
+  //       }, 10)
+  //     })
+  //   }
+
+  //   function getUserMobileById (id) {
+  //     return new YouPromise((resolve, reject) => {
+  //       setTimeout(() => {
+  //         expect(id).toBe(9876)
+  //         user.mobile = '18611110000'
+  //         resolve(user)
+  //       }, 10)
+  //     })
+  //   }
+
+  //   getUserId()
+  //     .then(getUserMobileById)
+  //     .then(user => {
+  //       expect(user).toEqual({
+  //         id: 9876,
+  //         mobile: '18611110000'
+  //       })
+  //       cb()
+  //     })
+  // })
 })

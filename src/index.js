@@ -17,7 +17,7 @@ function YouPromise (fn) {
     state = 'fulfilled'
     setTimeout(() => {
       deferreds.forEach(function (deferred) {
-        deferred(value)
+        value = deferred(value)
       })
     }, 0)
   }
