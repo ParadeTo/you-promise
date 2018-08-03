@@ -18,7 +18,7 @@ describe('Promise tests', () => {
     }, 100)
   })
 
-  it('pass value should be right', cb => {
+  it('chained then should pass value rightly', cb => {
     const p1 = new Promise((resolve) => {
       setTimeout(() => {
         resolve(1)
@@ -36,35 +36,56 @@ describe('Promise tests', () => {
       })
   })
 
-  // it('chained promise', cb => {
-  //   let user = {}
-  //   function getUserId () {
-  //     return new Promise((resolve, reject) => {
-  //       setTimeout(() => {
-  //         user.id = 9876
-  //         resolve(9876)
-  //       }, 10)
-  //     })
-  //   }
+  it('chained promise', cb => {
+    let user = {}
+    function getUserId () {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          user.id = 9876
+          resolve(9876)
+        }, 10)
+      })
+    }
 
-  //   function getUserMobileById (id) {
-  //     return new Promise((resolve, reject) => {
-  //       setTimeout(() => {
-  //         expect(id).toBe(9876)
-  //         user.mobile = '18611110000'
-  //         resolve(user)
-  //       }, 10)
-  //     })
-  //   }
+    function getUserMobileById (id) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          expect(id).toBe(9876)
+          user.mobile = '18611110000'
+          resolve(user)
+        }, 10)
+      })
+    }
 
-  //   getUserId()
-  //     .then(getUserMobileById)
-  //     .then(user => {
-  //       expect(user).toEqual({
-  //         id: 9876,
-  //         mobile: '18611110000'
-  //       })
-  //       cb()
-  //     })
-  // })
+    getUserId()
+      .then(getUserMobileById)
+      .then(user => {
+        expect(user).toEqual({
+          id: 9876,
+          mobile: '18611110000'
+        })
+        cb()
+      })
+  })
+
+  it('chained promise pass val', cb => {
+    const p1 = new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(1)
+      }, 10)
+    })
+
+    p1
+      .then(() => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve('a')
+          }, 10)
+        })
+      })
+      .then(val => {
+        expect(val).toBe('a')
+        cb()
+      })
+  })
 })
