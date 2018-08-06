@@ -1,6 +1,42 @@
 const YouPromise = require('../src')
 
 describe('YouPromise tests', () => {
+  let getUserId
+  let getUserMobileById
+  let printUser
+  let user
+
+  beforeEach(() => {
+    user = {}
+
+    getUserId = () => {
+      return new YouPromise((resolve, reject) => {
+        setTimeout(() => {
+          user.id = 9876
+          resolve(9876)
+        }, 10)
+      })
+    }
+
+    getUserMobileById = (id) => {
+      return new YouPromise((resolve, reject) => {
+        setTimeout(() => {
+          expect(id).toBe(9876)
+          user.mobile = '18611110000'
+          resolve(user)
+        }, 20)
+      })
+    }
+
+    printUser = (user) => {
+      console.log(user)
+      expect(user).toEqual({
+        id: 9876,
+        mobile: '18611110000'
+      })
+    }
+  })
+
   it('support chain', cb => {
     let times = 0
     new YouPromise((resolve) => {
@@ -67,38 +103,12 @@ describe('YouPromise tests', () => {
   })
 
   it('chained promise', cb => {
-    let user = {}
-    function getUserId () {
-      return new YouPromise((resolve, reject) => {
-        setTimeout(() => {
-          user.id = 9876
-          resolve(9876)
-        }, 10)
-      })
-    }
-
-    function getUserMobileById (id) {
-      return new YouPromise((resolve, reject) => {
-        setTimeout(() => {
-          expect(id).toBe(9876)
-          user.mobile = '18611110000'
-          resolve(user)
-        }, 20)
-      })
-    }
-
-    function printUser (user) {
-      console.log(user)
-      expect(user).toEqual({
-        id: 9876,
-        mobile: '18611110000'
-      })
-      cb()
-    }
-
     getUserId()
       .then(getUserMobileById)
-      .then(printUser)
+      .then(val => {
+        printUser(val)
+        cb()
+      })
   })
 
   it('chained promise pass val', cb => {
@@ -118,6 +128,60 @@ describe('YouPromise tests', () => {
       })
       .then(val => {
         expect(val).toBe('a')
+        cb()
+      })
+  })
+
+  it('support handle error', cb => {
+    const p = new YouPromise((resolve, reject) => {
+      reject('error')
+    })
+
+    p.then(value => {
+
+    }, err => {
+      expect(err).toBe('error')
+      cb()
+    })
+  })
+
+  it('support error bubble', cb => {
+    getUserId = () => {
+      return new YouPromise((resolve, reject) => {
+        setTimeout(() => {
+          user.id = 9876
+          reject('user id is null')
+        }, 10)
+      })
+    }
+
+    getUserId()
+      .then(getUserMobileById, err => {
+        expect(err).toBe('user id is null')
+      })
+
+    getUserId()
+      .then(getUserMobileById)
+      .then(printUser, err => {
+        expect(err).toBe('user id is null')
+        cb()
+      })
+  })
+
+  it('reject in then', cb => {
+    getUserMobileById = id => {
+      return new YouPromise((resolve, reject) => {
+        setTimeout(() => {
+          expect(id).toBe(9876)
+          reject('user mobile is null')
+        }, 20)
+      })
+    }
+
+    getUserId()
+      .then(getUserMobileById)
+      .then(printUser, err => {
+        expect(err).toBe('user mobile is null')
         cb()
       })
   })

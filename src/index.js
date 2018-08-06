@@ -3,11 +3,13 @@ function YouPromise (fn) {
   let state = 'pending'
   const deferreds = []
 
-  this.then = function (onFulfilled) {
-    return new YouPromise(function (resolve) {
+  this.then = function (onFulfilled, onRejected) {
+    return new YouPromise(function (resolve, reject) {
       handle({
         onFulfilled: onFulfilled || null,
-        resolve: resolve
+        onRejected: onRejected || null,
+        resolve: resolve,
+        reject: reject
       })
     })
   }
@@ -18,20 +20,37 @@ function YouPromise (fn) {
       return
     }
 
-    var ret = deferred.onFulfilled(value)
+    let cb = state === 'fulfilled' ? deferred.onFulfilled : deferred.onRejected
+    let ret
+    if (cb === null) {
+      cb = state === 'fulfilled' ? deferred.resolve : deferred.reject
+      cb(value)
+      return
+    }
+    ret = cb(value)
     deferred.resolve(ret)
   }
 
   function resolve (newValue) {
     if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
-      var then = newValue.then
+      const then = newValue.then
       if (typeof then === 'function') {
-        then.call(newValue, resolve)
+        then.call(newValue, resolve, reject)
         return
       }
     }
     state = 'fulfilled'
     value = newValue
+    finale()
+  }
+
+  function reject (reason) {
+    state = 'rejected'
+    value = reason
+    finale()
+  }
+
+  function finale () {
     setTimeout(function () {
       deferreds.forEach(function (deferred) {
         handle(deferred)
@@ -39,7 +58,7 @@ function YouPromise (fn) {
     }, 0)
   }
 
-  fn(resolve)
+  fn(resolve, reject)
 }
 
 module.exports = YouPromise
