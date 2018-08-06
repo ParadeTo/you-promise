@@ -185,4 +185,23 @@ describe('YouPromise tests', () => {
         cb()
       })
   })
+
+  it('handle exception', cb => {
+    getUserId = () => {
+      return new YouPromise((resolve, reject) => {
+        setTimeout(() => {
+          resolve()
+        }, 20)
+      })
+    }
+
+    getUserId()
+      .then(val => {
+        throw new Error('err')
+      })
+      .then(null, err => {
+        expect(err).toEqual(new Error('err'))
+        cb()
+      })
+  })
 })

@@ -27,8 +27,13 @@ function YouPromise (fn) {
       cb(value)
       return
     }
-    ret = cb(value)
-    deferred.resolve(ret)
+
+    try {
+      ret = cb(value)
+      deferred.resolve(ret)
+    } catch (e) {
+      deferred.reject(e)
+    }
   }
 
   function resolve (newValue) {
